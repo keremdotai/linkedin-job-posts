@@ -1,0 +1,30 @@
+name: linkedin
+
+services:
+
+  # Database
+  mongodb:
+    image: mongodb/mongodb-community-server:6.0-ubi8
+    restart: always
+    attach: false
+    ports:
+      - ${DB_PORT}:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - type: bind
+        source: ./data
+        target: /data/db
+
+  # Backend
+  backend:
+    build:
+      context: ./api
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    environment:
+      - HOST=${SERVER_HOST}
+      - PORT=${SERVER_PORT}
+    depends_on:
+      - mongodb
